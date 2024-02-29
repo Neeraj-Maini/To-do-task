@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task Tracker</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+    .task-list {
+        margin-top: 20px;
+    }
+    .task {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+    .completed {
+        text-decoration: line-through;
+        color: #888;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">Task Tracker</h1>
+    <div>
+        <input type="text" id="taskInput" class="form-control" placeholder="Enter task description">
+        <button class="btn btn-primary mt-2" onclick="addTask()">Add Task</button>
+    </div>
+    <div class="task-list" id="taskList"></div>
+</div>
+
+<script>
+    let tasks = [];
+
+    function addTask() {
+        const taskInput = document.getElementById("taskInput");
+        const description = taskInput.value.trim();
+        if (description === "") {
+            alert("Please enter a task description.");
+            return;
+        }
+        const task = { id: Date.now(), description, completed: false };
+        tasks.push(task);
+        taskInput.value = "";
+        renderTasks();
+    }
+
+    function renderTasks() {
+        const taskList = document.getElementById("taskList");
+        taskList.innerHTML = "";
+        tasks.forEach(task => {
+            const taskElement = document.createElement("div");
+            taskElement.classList.add("task");
+            if (task.completed) {
+                taskElement.classList.add("completed");
+            }
+            taskElement.innerHTML = `
+                <span>${task.description}</span>
+                <div>
+                    <button class="btn btn-info btn-sm mr-2" onclick="toggleCompleted(${task.id})">${task.completed ? "Mark Incomplete" : "Mark Complete"}</button>
+                    <button class="btn btn-primary btn-sm mr-2" onclick="editTask(${task.id})">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">Delete</button>
+                </div>
+            `;
+            taskList.appendChild(taskElement);
+        });
+    }
+
+    function toggleCompleted(id) {
+        const task = tasks.find(task => task.id === id);
+        if (task) {
+            task.completed = !task.completed;
+            renderTasks();
+        }
+    }
+
+    function editTask(id) {
+        const task = tasks.find(task => task.id === id);
+        if (task) {
+            const description = prompt("Edit task description:", task.description);
+            if (description !== null) {
+                task.description = description.trim();
+                renderTasks();
+            }
+        }
+    }
+
+    function deleteTask(id) {
+        tasks = tasks.filter(task => task.id !== id);
+        renderTasks();
+    }
+
+    renderTasks();
+</script>
+</body>
+</html>
